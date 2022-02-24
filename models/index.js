@@ -1,6 +1,7 @@
 const User = require('./User'); // import the User model
 const Post = require('./Post')
 const Vote = require('./Vote')
+const Comment = require('./Comment')
 
 // create associations 
 // creates the reference for the id column in the User model to link to the corresponding foreign key pair which is the user_id in the Post model
@@ -44,4 +45,20 @@ Post.hasMany(Vote, {
     foreignKey: 'post_id'
 });
 
-module.exports = { User, Post, Vote }; // and export an object with User as a property
+Comment.belongsTo(User, {
+    foreignKey: 'user_id'
+});
+
+Comment.belongsTo(Post, {
+    foreignKey: 'post_id'
+});
+
+User.hasMany(Comment, {
+    foreignKey: 'user_id'
+});
+
+Post.hasMany(Comment, {
+    foreignKey: 'post_id'
+});
+
+module.exports = { User, Post, Vote, Comment }; // and export an object with User as a property

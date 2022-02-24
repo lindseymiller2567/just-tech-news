@@ -1,8 +1,7 @@
 const router = require('express').Router();
-const { Post, User, Vote } = require('../../models');
+const { Post, User, Vote, Comment } = require('../../models');
 const sequelize = require('../../config/connection');
 
-// get all users
 router.get('/', (req, res) => {
     console.log('===============')
     Post.findAll({
@@ -16,6 +15,14 @@ router.get('/', (req, res) => {
         order: [['created_at', 'DESC']], // order property is assigned a nested array that orders by the created_at column in descending order
         include: [ // include property is expressed as an array of objects, this is how we do the JOIN sql statements in JS
             {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
+            },
+            {
                 model: User,
                 attributes: ['username']
             }
@@ -28,7 +35,6 @@ router.get('/', (req, res) => {
         });
 });
 
-// get one user by id
 router.get('/:id', (req, res) => {
     Post.findOne({
         where: {
@@ -42,6 +48,14 @@ router.get('/:id', (req, res) => {
             [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
         ],
         include: [ // include is like 'join' 
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
+            },
             {
                 model: User,
                 attributes: ['username'] // we can choose which data is returned from the 'join' using the attributes property within the include property
