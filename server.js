@@ -1,16 +1,37 @@
 const path = require('path');
 const express = require('express');
-const routes = require('./controllers/');
-const sequelize = require('./config/connection');
+const session = require('express-session');
+const exphbs = require('express-handlebars'); // require handlebars 
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+const sequelize = require('./config/connection');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+
+const sess = {
+    secret: 'Super secret secret',
+    cookie: {},
+    resave: false,
+    saveUninitialized: true,
+    store: new SequelizeStore({
+        db: sequelize
+    })
+};
+
+app.use(session(sess));
+
+const hbs = exphbs.create({});
+
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // make style sheet available to the client
 
 // turn on routes
+const routes = require('./controllers/');
 app.use(routes);
 
 // turn on connection to db and server 
@@ -25,9 +46,3 @@ sequelize.sync({ force: false }).then(() => {
 
 // Once you turn on the server with sequelize.sync({ force: true }) and confirm the database tables were recreated, 
 // switch back to using { force: false } and restart the server one more time just to make sure the changes took hold and you don't accidentally remove data!
-
-const exphbs = require('express-handlebars');
-const hbs = exphbs.create({});
-
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
