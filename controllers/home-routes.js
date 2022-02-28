@@ -35,7 +35,11 @@ router.get('/', (req, res) => {
             // the res.render() method can accept a second argument, an object, which includes all the data you want to pass to your template
             // console.log(dbPostData[0].get({ plain: true }));
             const posts = dbPostData.map(post => post.get({ plain: true })); // what is plain: true ??????? 
-            res.render('homepage', { posts });
+            res.render('homepage', {
+                posts,
+                loggedIn: req.session.loggedIn
+            });
+            // console.log('line 42: ' + req.session.loggedIn) = true
         })
         .catch(err => {
             console.log(err);
@@ -91,7 +95,10 @@ router.get('/post/:id', (req, res) => {
             const post = dbPostData.get({ plain: true });
 
             // pass data to template
-            res.render('single-post', { post });
+            res.render('single-post', {
+                post,
+                loggedIn: req.session.loggedIn // used in single-post.handlebars with the {{ #if }}
+            });
         })
         .catch(err => {
             console.log(err);
