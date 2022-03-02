@@ -28,6 +28,7 @@ const hbs = exphbs.create({ helpers }); // pass the helpers to the existing exph
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
+// middleware is just a function that executes before the function that sends teh response back
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // make style sheet available to the client
